@@ -18,10 +18,10 @@
     }
   ],
   "require": {
-    "php": "^7.3|^8.0",
-    "illuminate/support": "^8.0",
-    "illuminate/console": "^8.0",
-    "illuminate/cache": "^8.0"
+    "php": "^7.3||^8.0",
+    "illuminate/support": "^9.0",
+    "illuminate/console": "^9.0",
+    "illuminate/cache": "^9.0"
   },
   "suggest": {
     "geoip2/geoip2": "Required to use the MaxMind database or web service with GeoIP (~2.1).",
@@ -53,7 +53,8 @@
   },
   "extra": {
     "branch-alias": {
-      "dev-master": "1.0-dev"
+      "dev-master": "1.0-dev",
+      "dev-laravel9": "2.0-dev"
     },
     "laravel": {
       "providers": [
