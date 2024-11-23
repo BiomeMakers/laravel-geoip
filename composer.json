@@ -11,7 +11,7 @@
     "infoDB"
   ],
   "license": "BSD-2-Clause",
-  "version": "1.2.7",
+  "version": "1.2.8",
   "authors": [
     {
       "name": "Daniel Stainback",
@@ -20,7 +20,7 @@
   ],
   "require": {
     "php": "^8.1",
-    "laravel/framework": "^10.0"
+    "laravel/framework": "^11.0"
   },
   "suggest": {
     "geoip2/geoip2": "Required to use the MaxMind database or web service with GeoIP (~2.1).",
