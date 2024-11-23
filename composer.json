@@ -54,7 +54,8 @@
     "branch-alias": {
       "dev-master": "1.0-dev",
       "dev-php8_laravel9": "1.2.6-dev",
-      "dev-php82_laravel10": "1.2.7-dev"
+      "dev-php82_laravel10": "1.2.7-dev",
+      "dev-php82_laravel11": "1.2.8-dev"
     },
     "laravel": {
       "providers": [
