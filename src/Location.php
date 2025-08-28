@@ -5,6 +5,7 @@ namespace Torann\GeoIP;
 use ArrayAccess;
 use Illuminate\Support\Str;
 use Illuminate\Support\Arr;
+use ReturnTypeWillChange;
 
 /**
  * Class Location
@@ -33,7 +34,7 @@ class Location implements ArrayAccess
      *
      * @var array
      */
-    protected $attributes = [];
+    protected array $attributes = [];
 
     /**
      * Create a new location instance.
@@ -48,11 +49,11 @@ class Location implements ArrayAccess
     /**
      * Determine if the location is for the same IP address.
      *
-     * @param  string $ip
+     * @param string $ip
      *
      * @return bool
      */
-    public function same($ip)
+    public function same(string $ip): bool
     {
         return $this->getAttribute('ip') == $ip;
     }
@@ -60,12 +61,12 @@ class Location implements ArrayAccess
     /**
      * Set a given attribute on the location.
      *
-     * @param  string $key
+     * @param string $key
      * @param  mixed  $value
      *
      * @return $this
      */
-    public function setAttribute($key, $value)
+    public function setAttribute(string $key, mixed $value): static
     {
         $this->attributes[$key] = $value;
 
@@ -75,11 +76,11 @@ class Location implements ArrayAccess
     /**
      * Get an attribute from the $attributes array.
      *
-     * @param  string $key
+     * @param string $key
      *
      * @return mixed
      */
-    public function getAttribute($key)
+    public function getAttribute(string $key): mixed
     {
         $value = Arr::get($this->attributes, $key);
 
@@ -99,7 +100,7 @@ class Location implements ArrayAccess
      *
      * @return string
      */
-    public function getDisplayNameAttribute()
+    public function getDisplayNameAttribute(): string
     {
         return preg_replace('/^,\s/', '', "{$this->city}, {$this->state}");
     }
@@ -107,9 +108,10 @@ class Location implements ArrayAccess
     /**
      * Is the location the default.
      *
+     * @param $value
      * @return bool
      */
-    public function getDefaultAttribute($value)
+    public function getDefaultAttribute($value): bool
     {
         return is_null($value) ? false : $value;
     }
@@ -119,7 +121,7 @@ class Location implements ArrayAccess
      *
      * @return array
      */
-    public function toArray()
+    public function toArray(): array
     {
         return $this->attributes;
     }
@@ -127,11 +129,11 @@ class Location implements ArrayAccess
     /**
      * Get the location's attribute
      *
-     * @param  string $key
+     * @param string $key
      *
      * @return mixed
      */
-    public function __get($key)
+    public function __get(string $key)
     {
         return $this->getAttribute($key);
     }
@@ -139,10 +141,10 @@ class Location implements ArrayAccess
     /**
      * Set the location's attribute
      *
-     * @param  string $key
+     * @param string $key
      * @param  mixed  $value
      */
-    public function __set($key, $value)
+    public function __set(string $key, mixed $value)
     {
         $this->setAttribute($key, $value);
     }
@@ -154,7 +156,7 @@ class Location implements ArrayAccess
      *
      * @return bool
      */
-    public function offsetExists($offset)
+    public function offsetExists(mixed $offset): bool
     {
         return isset($this->$offset);
     }
@@ -166,7 +168,7 @@ class Location implements ArrayAccess
      *
      * @return mixed
      */
-    public function offsetGet($offset)
+    public function offsetGet(mixed $offset): mixed
     {
         return $this->$offset;
     }
@@ -179,7 +181,7 @@ class Location implements ArrayAccess
      *
      * @return void
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         $this->$offset = $value;
     }
@@ -191,7 +193,7 @@ class Location implements ArrayAccess
      *
      * @return void
      */
-    public function offsetUnset($offset)
+    public function offsetUnset(mixed $offset): void
     {
         unset($this->$offset);
     }
@@ -211,11 +213,11 @@ class Location implements ArrayAccess
     /**
      * Unset an attribute on the location.
      *
-     * @param  string $key
+     * @param string $key
      *
      * @return void
      */
-    public function __unset($key)
+    public function __unset(string $key)
     {
         unset($this->attributes[$key]);
     }

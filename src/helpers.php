@@ -1,14 +1,16 @@
 <?php
 
+use Torann\GeoIP\{GeoIP, Location};
+
 if (!function_exists('geoip')) {
     /**
      * Get the location of the provided IP.
      *
-     * @param string $ip
+     * @param string|null $ip
      *
-     * @return \Torann\GeoIP\GeoIP|\Torann\GeoIP\Location
+     * @return GeoIP|Location
      */
-    function geoip($ip = null)
+    function geoip(?string $ip = null)
     {
         if (is_null($ip)) {
             return app('geoip');

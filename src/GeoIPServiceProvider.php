@@ -4,6 +4,7 @@ namespace Torann\GeoIP;
 
 use Illuminate\Support\Str;
 use Illuminate\Support\ServiceProvider;
+use Torann\GeoIP\Contracts\ServiceInterface;
 
 class GeoIPServiceProvider extends ServiceProvider
 {
@@ -36,7 +37,8 @@ class GeoIPServiceProvider extends ServiceProvider
     {
         $this->app->singleton('geoip', fn($app) => new GeoIP(
             $app->config->get('geoip', []),
-            $app['cache']
+            $app['cache'],
+            $app->make(ServiceInterface::class)
         ));
     }
 

@@ -79,12 +79,14 @@ class GeoIP
     /**
      * Create a new GeoIP instance.
      *
-     * @param array        $config
+     * @param array $config
      * @param CacheManager $cache
+     * @param ServiceInterface $service
      */
-    public function __construct(array $config, CacheManager $cache)
+    public function __construct(array $config, CacheManager $cache, ServiceInterface $service)
     {
         $this->config = $config;
+        $this->service = $service;
 
         // Create caching instance
         $this->cache = new Cache(
