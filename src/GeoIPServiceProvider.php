@@ -37,8 +37,7 @@ class GeoIPServiceProvider extends ServiceProvider
     {
         $this->app->singleton('geoip', fn($app) => new GeoIP(
             $app->config->get('geoip', []),
-            $app['cache'],
-            $app->make(ServiceInterface::class)
+            $app['cache']
         ));
     }
 
