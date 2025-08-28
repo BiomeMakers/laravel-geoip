@@ -43,9 +43,9 @@ class GeoIP
     /**
      * GeoIP service instance.
      *
-     * @var Contracts\ServiceInterface|null
+     * @var Contracts\ServiceInterface
      */
-    protected ?Contracts\ServiceInterface $service = null;
+    protected ?Contracts\ServiceInterface $service;
 
     /**
      * Cache manager instance.
@@ -81,12 +81,13 @@ class GeoIP
      *
      * @param array $config
      * @param CacheManager $cache
+     * @param ServiceInterface $service
      */
-    public function __construct(array $config, CacheManager $cache)
+    public function __construct(array $config, CacheManager $cache, ServiceInterface $service)
     {
         $this->config = $config;
 
-        $this->service = app(ServiceInterface::class);
+        $this->service = $service;
 
         // Create caching instance
         $this->cache = new Cache(
