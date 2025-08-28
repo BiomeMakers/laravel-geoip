@@ -13,7 +13,7 @@ abstract class AbstractService implements ServiceInterface
      *
      * @var array
      */
-    protected $config;
+    protected array $config;
 
     /**
      * Create a new service instance.
@@ -32,7 +32,7 @@ abstract class AbstractService implements ServiceInterface
      *
      * @return void
      */
-    public function boot()
+    public function boot(): void
     {
         //
     }
@@ -40,7 +40,7 @@ abstract class AbstractService implements ServiceInterface
     /**
      * {@inheritdoc}
      */
-    public function hydrate(array $attributes = [])
+    public function hydrate(array $attributes = []): Location
     {
         return new Location($attributes);
     }
@@ -53,7 +53,7 @@ abstract class AbstractService implements ServiceInterface
      *
      * @return mixed
      */
-    public function config(string $key, mixed $default = null)
+    public function config(string $key, mixed $default = null): mixed
     {
         return Arr::get($this->config, $key, $default);
     }
