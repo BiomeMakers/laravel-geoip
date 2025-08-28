@@ -17,10 +17,10 @@ class Cache
      * Create a new cache instance.
      *
      * @param CacheManager $cache
-     * @param array $tags
+     * @param array|null $tags
      * @param int $expires  Lifetime of the cache.
      */
-    public function __construct(CacheManager $cache, array $tags, protected int $expires = 30)
+    public function __construct(CacheManager $cache, ?array $tags, protected int $expires = 30)
     {
         $this->cache = $tags ? $cache->tags($tags) : $cache;
     }

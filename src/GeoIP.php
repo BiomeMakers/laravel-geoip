@@ -7,6 +7,8 @@ use Monolog\Logger;
 use Illuminate\Support\Arr;
 use Illuminate\Cache\CacheManager;
 use Monolog\Handler\StreamHandler;
+use Psr\SimpleCache\InvalidArgumentException;
+use Torann\GeoIP\Contracts\ServiceInterface;
 
 class GeoIP
 {
@@ -15,49 +17,49 @@ class GeoIP
      *
      * @var array
      */
-    protected $config;
+    protected array $config;
 
     /**
      * Remote Machine IP address.
      *
-     * @var float
+     * @var string|null|float
      */
-    protected $remote_ip = null;
+    protected string|null|float $remote_ip = null;
 
     /**
      * Current location instance.
      *
-     * @var Location
+     * @var Location|null
      */
-    protected $location = null;
+    protected ?Location $location = null;
 
     /**
      * Currency data.
      *
-     * @var array
+     * @var array|null
      */
-    protected $currencies = null;
+    protected ?array $currencies = null;
 
     /**
      * GeoIP service instance.
      *
      * @var Contracts\ServiceInterface
      */
-    protected $service;
+    protected Contracts\ServiceInterface $service;
 
     /**
      * Cache manager instance.
      *
-     * @var \Illuminate\Cache\CacheManager
+     * @var CacheManager|Cache
      */
-    protected $cache;
+    protected CacheManager|Cache $cache;
 
     /**
      * Default Location data.
      *
      * @var array
      */
-    protected $default_location = [
+    protected array $default_location = [
         'ip' => '127.0.0.0',
         'iso_code' => 'US',
         'country' => 'United States',
@@ -104,12 +106,12 @@ class GeoIP
     /**
      * Get the location from the provided IP.
      *
-     * @param string $ip
+     * @param string|null $ip
      *
-     * @return \Torann\GeoIP\Location
-     * @throws \Exception
+     * @return Location|null
+     * @throws InvalidArgumentException
      */
-    public function getLocation($ip = null)
+    public function getLocation(?string $ip = null): ?Location
     {
         // Get location data
         $this->location = $this->find($ip);
@@ -125,12 +127,12 @@ class GeoIP
     /**
      * Find location from IP.
      *
-     * @param string $ip
+     * @param string|null $ip
      *
-     * @return \Torann\GeoIP\Location
-     * @throws \Exception
+     * @return Location
+     * @throws Exception
      */
-    private function find($ip = null)
+    private function find(?string $ip = null): Location
     {
         // If IP not set, user remote IP
         $ip = $ip ?: $this->remote_ip;
@@ -157,7 +159,7 @@ class GeoIP
                 $location->default = false;
 
                 return $location;
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 if ($this->config('log_failures', true) === true) {
                     $log = new Logger('geoip');
                     $log->pushHandler(new StreamHandler(storage_path('logs/geoip.log'), Logger::ERROR));
@@ -176,7 +178,7 @@ class GeoIP
      *
      * @return string
      */
-    public function getCurrency($iso)
+    public function getCurrency(string $iso): string
     {
         if ($this->currencies === null && $this->config('include_currency', false)) {
             $this->currencies = include(__DIR__ . '/Support/Currencies.php');
@@ -188,10 +190,10 @@ class GeoIP
     /**
      * Get service instance.
      *
-     * @return \Torann\GeoIP\Contracts\ServiceInterface
+     * @return ServiceInterface
      * @throws Exception
      */
-    public function getService()
+    public function getService(): ServiceInterface
     {
         if ($this->service === null) {
             // Get service configuration
@@ -215,9 +217,9 @@ class GeoIP
     /**
      * Get cache instance.
      *
-     * @return \Torann\GeoIP\Cache
+     * @return Cache|CacheManager
      */
-    public function getCache()
+    public function getCache(): Cache|CacheManager
     {
         return $this->cache;
     }
@@ -227,7 +229,7 @@ class GeoIP
      *
      * @return string
      */
-    public function getClientIP()
+    public function getClientIP(): string
     {
         $remotes_keys = [
             'HTTP_X_FORWARDED_FOR',
@@ -260,7 +262,7 @@ class GeoIP
      *
      * @return bool
      */
-    private function isValid($ip)
+    private function isValid(string $ip): bool
     {
         if (! filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 | FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)
             && ! filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 | FILTER_FLAG_NO_PRIV_RANGE)
@@ -279,30 +281,27 @@ class GeoIP
      *
      * @return bool
      */
-    private function shouldCache(Location $location, $ip = null)
+    private function shouldCache(Location $location, ?string $ip = null): bool
     {
         if ($location->default === true || $location->cached === true) {
             return false;
         }
 
-        switch ($this->config('cache', 'none')) {
-            case 'all':
-            case 'some' && $ip === null:
-                return true;
-        }
-
-        return false;
+        return match ($this->config('cache', 'none')) {
+            'all', 'some' && $ip === null => true,
+            default => false,
+        };
     }
 
     /**
      * Get configuration value.
      *
      * @param string $key
-     * @param mixed  $default
+     * @param mixed|null $default
      *
      * @return mixed
      */
-    public function config($key, $default = null)
+    public function config(string $key, mixed $default = null): mixed
     {
         return Arr::get($this->config, $key, $default);
     }
