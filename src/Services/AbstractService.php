@@ -49,11 +49,11 @@ abstract class AbstractService implements ServiceInterface
      * Get configuration value.
      *
      * @param string $key
-     * @param mixed  $default
+     * @param mixed|null $default
      *
      * @return mixed
      */
-    public function config($key, $default = null)
+    public function config(string $key, mixed $default = null)
     {
         return Arr::get($this->config, $key, $default);
     }

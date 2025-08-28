@@ -40,7 +40,7 @@ class IPData extends AbstractService
      * {@inheritdoc}
      * @throws Exception
      */
-    public function locate($ip): Location
+    public function locate(string $ip): Location
     {
         // Get data from client
         $data = $this->client->get($ip);

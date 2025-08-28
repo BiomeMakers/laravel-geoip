@@ -38,7 +38,7 @@ class IPGeoLocation extends AbstractService
      * {@inheritdoc}
      */
 
-    public function locate($ip): \Torann\GeoIP\Location
+    public function locate(string $ip): \Torann\GeoIP\Location
     {
         // Get data from client
         $data = $this->client->get('&ip=' . $ip);

@@ -41,7 +41,7 @@ class MaxMindDatabase extends AbstractService
     /**
      * {@inheritdoc}
      */
-    public function locate($ip): Location
+    public function locate(string $ip): Location
     {
         $record = $this->reader->city($ip);
 

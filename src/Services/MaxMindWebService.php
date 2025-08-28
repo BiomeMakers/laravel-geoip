@@ -32,7 +32,7 @@ class MaxMindWebService extends AbstractService
     /**
      * {@inheritdoc}
      */
-    public function locate($ip): Location
+    public function locate(string $ip): Location
     {
         $record = $this->client->city($ip);
 
