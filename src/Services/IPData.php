@@ -4,6 +4,7 @@ namespace Torann\GeoIP\Services;
 
 use Exception;
 use Illuminate\Support\Arr;
+use Torann\GeoIP\Location;
 use Torann\GeoIP\Support\HttpClient;
 
 /**
@@ -17,14 +18,15 @@ class IPData extends AbstractService
      *
      * @var HttpClient
      */
-    protected $client;
+    protected HttpClient $client;
 
     /**
      * The "booting" method of the service.
      *
      * @return void
      */
-    public function boot()
+    #[\Override]
+    public function boot(): void
     {
         $this->client = new HttpClient([
             'base_uri' => 'https://api.ipdata.co/',
@@ -38,17 +40,17 @@ class IPData extends AbstractService
      * {@inheritdoc}
      * @throws Exception
      */
-    public function locate($ip)
+    public function locate($ip): Location
     {
         // Get data from client
         $data = $this->client->get($ip);
 
         // Verify server response
-        if ($this->client->getErrors() !== null || empty($data[0])) {
-            throw new Exception('Request failed (' . $this->client->getErrors() . ')');
+        if ($this->client !== null || empty($data[0])) {
+            throw new Exception('Request failed (' . $this->client . ')');
         }
 
-        $json = json_decode($data[0], true);
+        $json = json_decode((string) $data[0], true);
 
         return $this->hydrate([
             'ip' => $ip,

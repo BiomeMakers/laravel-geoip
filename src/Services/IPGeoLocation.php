@@ -13,14 +13,15 @@ class IPGeoLocation extends AbstractService
      *
      * @var HttpClient
      */
-    protected $client;
+    protected HttpClient $client;
 
     /**
      * The "booting" method of the service.
      *
      * @return void
      */
-    public function boot()
+    #[\Override]
+    public function boot(): void
     {
         $base = [
             'base_uri' => 'https://api.ipgeolocation.io/',
@@ -37,18 +38,18 @@ class IPGeoLocation extends AbstractService
      * {@inheritdoc}
      */
 
-    public function locate($ip)
+    public function locate($ip): \Torann\GeoIP\Location
     {
         // Get data from client
         $data = $this->client->get('&ip=' . $ip);
 
         // Verify server response
-        if ($this->client->getErrors() !== null) {
-            throw new Exception('Request failed (' . $this->client->getErrors() . ')');
+        if ($this->client !== null) {
+            throw new Exception('Request failed (' . $this->client . ')');
         }
 
         // Parse body content
-        $json = json_decode($data[0], true);
+        $json = json_decode((string) $data[0], true);
 
         return $this->hydrate($json);
     }

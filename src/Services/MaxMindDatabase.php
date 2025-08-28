@@ -5,6 +5,7 @@ namespace Torann\GeoIP\Services;
 use PharData;
 use Exception;
 use GeoIp2\Database\Reader;
+use Torann\GeoIP\Location;
 
 class MaxMindDatabase extends AbstractService
 {
@@ -20,13 +21,14 @@ class MaxMindDatabase extends AbstractService
      *
      * @return void
      */
-    public function boot()
+    #[\Override]
+    public function boot(): void
     {
         $path = $this->config('database_path');
 
         // Copy test database for now
         if (is_file($path) === false) {
-            @mkdir(dirname($path));
+            @mkdir(dirname((string) $path));
 
             copy(__DIR__ . '/../../resources/geoip.mmdb', $path);
         }
@@ -39,7 +41,7 @@ class MaxMindDatabase extends AbstractService
     /**
      * {@inheritdoc}
      */
-    public function locate($ip)
+    public function locate($ip): Location
     {
         $record = $this->reader->city($ip);
 
@@ -64,7 +66,7 @@ class MaxMindDatabase extends AbstractService
      * @return string
      * @throws Exception
      */
-    public function update()
+    public function update(): string
     {
         if ($this->config('database_path', false) === false) {
             throw new Exception('Database path not set in config file.');
@@ -97,7 +99,7 @@ class MaxMindDatabase extends AbstractService
      *
      * @return void
      */
-    protected function withTemporaryDirectory(callable $callback)
+    protected function withTemporaryDirectory(callable $callback): void
     {
         $directory = tempnam(sys_get_temp_dir(), 'maxmind');
 
@@ -122,14 +124,14 @@ class MaxMindDatabase extends AbstractService
      * @return mixed
      * @throws \Exception
      */
-    protected function findDatabaseFile($archive)
+    protected function findDatabaseFile(PharData $archive): mixed
     {
         foreach ($archive as $file) {
             if ($file->isDir()) {
                 return $this->findDatabaseFile(new PharData($file->getPathName()));
             }
 
-            if (pathinfo($file, PATHINFO_EXTENSION) === 'mmdb') {
+            if (pathinfo((string) $file, PATHINFO_EXTENSION) === 'mmdb') {
                 return $file;
             }
         }
@@ -142,9 +144,9 @@ class MaxMindDatabase extends AbstractService
      *
      * @param string $directory
      *
-     * @return mixed
+     * @return bool
      */
-    protected function deleteDirectory(string $directory)
+    protected function deleteDirectory(string $directory): bool
     {
         if (! file_exists($directory)) {
             return true;

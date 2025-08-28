@@ -11,7 +11,7 @@ class MaxMindDatabaseTest extends TestCase
      */
     public function shouldReturnConfigValue()
     {
-        list($service, $config) = $this->getService();
+        [$service, $config] = $this->getService();
 
         $this->assertEquals($service->config('database_path'), $config['database_path']);
     }
@@ -21,7 +21,7 @@ class MaxMindDatabaseTest extends TestCase
      */
     public function shouldReturnValidLocation()
     {
-        list($service, $config) = $this->getService();
+        [$service, $config] = $this->getService();
 
         $location = $service->locate('81.2.69.142');
 
@@ -35,7 +35,7 @@ class MaxMindDatabaseTest extends TestCase
      */
     public function shouldReturnInvalidLocation()
     {
-        list($service, $config) = $this->getService();
+        [$service, $config] = $this->getService();
 
         try {
             $location = $service->locate('1.1.1.1');

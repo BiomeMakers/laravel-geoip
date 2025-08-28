@@ -4,6 +4,7 @@ namespace Torann\GeoIP\Services;
 
 use Exception;
 use Illuminate\Support\Arr;
+use Torann\GeoIP\Location;
 use Torann\GeoIP\Support\HttpClient;
 
 class IPApi extends AbstractService
@@ -13,21 +14,22 @@ class IPApi extends AbstractService
      *
      * @var HttpClient
      */
-    protected $client;
+    protected HttpClient $client;
 
     /**
      * An array of continents.
      *
      * @var array
      */
-    protected $continents;
+    protected array $continents;
 
     /**
      * The "booting" method of the service.
      *
      * @return void
      */
-    public function boot()
+    #[\Override]
+    public function boot(): void
     {
         $base = [
             'base_uri' => 'http://ip-api.com/',
@@ -56,19 +58,20 @@ class IPApi extends AbstractService
 
     /**
      * {@inheritdoc}
+     * @throws Exception
      */
-    public function locate($ip)
+    public function locate($ip): Location
     {
         // Get data from client
         $data = $this->client->get('json/' . $ip);
 
         // Verify server response
-        if ($this->client->getErrors() !== null) {
-            throw new Exception('Request failed (' . $this->client->getErrors() . ')');
+        if ($this->client !== null) {
+            throw new Exception('Request failed (' . $this->client . ')');
         }
 
         // Parse body content
-        $json = json_decode($data[0]);
+        $json = json_decode((string) $data[0]);
 
         // Verify response status
         if ($json->status !== 'success') {
@@ -96,23 +99,23 @@ class IPApi extends AbstractService
      * @return string
      * @throws Exception
      */
-    public function update()
+    public function update(): string
     {
         $data = $this->client->get('https://dev.maxmind.com/static/csv/codes/country_continent.csv');
 
         // Verify server response
-        if ($this->client->getErrors() !== null) {
-            throw new Exception($this->client->getErrors());
+        if ($this->client !== null) {
+            throw new Exception($this->client);
         }
 
-        $lines = explode("\n", $data[0]);
+        $lines = explode("\n", (string) $data[0]);
 
         array_shift($lines);
 
         $output = [];
 
         foreach ($lines as $line) {
-            $arr = str_getcsv($line);
+            $arr = str_getcsv($line, escape: '\\');
 
             if (count($arr) < 2) {
                 continue;
@@ -136,7 +139,7 @@ class IPApi extends AbstractService
      *
      * @return string
      */
-    private function getContinent($code)
+    private function getContinent(string $code): string
     {
         return Arr::get($this->continents, $code, 'Unknown');
     }

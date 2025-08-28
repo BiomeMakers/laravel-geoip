@@ -2,35 +2,27 @@
 
 namespace Torann\GeoIP;
 
-use Illuminate\Cache\CacheManager;
+use Illuminate\Cache\{CacheManager, TaggedCache};
 
 class Cache
 {
     /**
      * Instance of cache manager.
      *
-     * @var \Illuminate\Cache\CacheManager
+     * @var CacheManager|TaggedCache
      */
-    protected $cache;
-
-    /**
-     * Lifetime of the cache.
-     *
-     * @var int
-     */
-    protected $expires;
+    protected CacheManager|TaggedCache $cache;
 
     /**
      * Create a new cache instance.
      *
      * @param CacheManager $cache
-     * @param array        $tags
-     * @param int          $expires
+     * @param array $tags
+     * @param int $expires  Lifetime of the cache.
      */
-    public function __construct(CacheManager $cache, $tags, $expires = 30)
+    public function __construct(CacheManager $cache, array $tags, protected int $expires = 30)
     {
         $this->cache = $tags ? $cache->tags($tags) : $cache;
-        $this->expires = $expires;
     }
 
     /**
@@ -40,7 +32,7 @@ class Cache
      *
      * @return Location|null
      */
-    public function get($name)
+    public function get(string $name): ?Location
     {
         $value = $this->cache->get($name);
 
@@ -52,12 +44,12 @@ class Cache
     /**
      * Store an item in cache.
      *
-     * @param string   $name
+     * @param string $name
      * @param Location $location
      *
      * @return bool
      */
-    public function set($name, Location $location)
+    public function set(string $name, Location $location): bool
     {
         return $this->cache->put($name, $location->toArray(), $this->expires);
     }
@@ -67,7 +59,7 @@ class Cache
      *
      * @return bool
      */
-    public function flush()
+    public function flush(): bool
     {
         return $this->cache->flush();
     }

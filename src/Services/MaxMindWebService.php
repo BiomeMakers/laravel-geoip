@@ -3,22 +3,24 @@
 namespace Torann\GeoIP\Services;
 
 use GeoIp2\WebService\Client;
+use Torann\GeoIP\Location;
 
 class MaxMindWebService extends AbstractService
 {
     /**
      * Service client instance.
      *
-     * @var \GeoIp2\WebService\Client
+     * @var Client
      */
-    protected $client;
+    protected Client $client;
 
     /**
      * The "booting" method of the service.
      *
      * @return void
      */
-    public function boot()
+    #[\Override]
+    public function boot(): void
     {
         $this->client = new Client(
             $this->config('user_id'),
@@ -30,7 +32,7 @@ class MaxMindWebService extends AbstractService
     /**
      * {@inheritdoc}
      */
-    public function locate($ip)
+    public function locate($ip): Location
     {
         $record = $this->client->city($ip);
 

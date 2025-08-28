@@ -2,6 +2,7 @@
 
 namespace Torann\GeoIP\Tests;
 
+use Illuminate\Cache\CacheManager;
 use Mockery;
 use PHPUnit\Framework\TestCase as PHPUnitTestCase;
 
@@ -21,7 +22,7 @@ class TestCase extends PHPUnitTestCase
 
     protected function makeGeoIP(array $config = [], $cacheMock = null)
     {
-        $cacheMock = $cacheMock ?: Mockery::mock('Illuminate\Cache\CacheManager');
+        $cacheMock = $cacheMock ?: Mockery::mock(CacheManager::class);
 
         $config = array_merge($this->getConfig(), $config);
 
@@ -45,7 +46,7 @@ class TestCase extends PHPUnitTestCase
      *
      * @param string $database
      */
-    protected function databaseCheck($database)
+    protected function databaseCheck(string $database): void
     {
         if (file_exists($database) === false) {
             @mkdir(dirname($database), 0755, true);

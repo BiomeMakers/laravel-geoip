@@ -12,7 +12,8 @@ class GeoIPServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function register()
+    #[\Override]
+    public function register(): void
     {
         $this->registerGeoIpService();
 
@@ -31,14 +32,12 @@ class GeoIPServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function registerGeoIpService()
+    public function registerGeoIpService(): void
     {
-        $this->app->singleton('geoip', function ($app) {
-            return new GeoIP(
-                $app->config->get('geoip', []),
-                $app['cache']
-            );
-        });
+        $this->app->singleton('geoip', fn($app) => new GeoIP(
+            $app->config->get('geoip', []),
+            $app['cache']
+        ));
     }
 
     /**
@@ -46,7 +45,7 @@ class GeoIPServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function registerResources()
+    public function registerResources(): void
     {
         if ($this->isLumen() === false) {
             $this->publishes([
@@ -60,7 +59,7 @@ class GeoIPServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function registerGeoIpCommands()
+    public function registerGeoIpCommands(): void
     {
         $this->commands([
             Console\Update::class,
@@ -73,7 +72,7 @@ class GeoIPServiceProvider extends ServiceProvider
      *
      * @return bool
      */
-    protected function isLumen()
+    protected function isLumen(): bool
     {
         return Str::contains($this->app->version(), 'Lumen') === true;
     }

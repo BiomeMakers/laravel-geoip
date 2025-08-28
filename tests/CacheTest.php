@@ -2,6 +2,7 @@
 
 namespace Torann\GeoIP\Tests;
 
+use Illuminate\Cache\CacheManager;
 use Mockery;
 
 class CacheTest extends TestCase
@@ -18,7 +19,7 @@ class CacheTest extends TestCase
             'lon' => -72.92,
         ];
 
-        $cacheMock = Mockery::mock('Illuminate\Cache\CacheManager')
+        $cacheMock = Mockery::mock(CacheManager::class)
             ->shouldAllowMockingProtectedMethods();
 
         $cacheMock->shouldReceive('get')
@@ -39,7 +40,7 @@ class CacheTest extends TestCase
      */
     public function shouldReturnInvalidLocation()
     {
-        $cacheMock = Mockery::mock('Illuminate\Cache\CacheManager')
+        $cacheMock = Mockery::mock(CacheManager::class)
             ->shouldAllowMockingProtectedMethods();
 
         $geo_ip = $this->makeGeoIP([], $cacheMock);
@@ -67,7 +68,7 @@ class CacheTest extends TestCase
             'lon' => -72.92,
         ]);
 
-        $cacheMock = Mockery::mock('Illuminate\Cache\CacheManager')
+        $cacheMock = Mockery::mock(CacheManager::class)
             ->shouldAllowMockingProtectedMethods();
 
         $geo_ip = $this->makeGeoIP([], $cacheMock);
@@ -88,7 +89,7 @@ class CacheTest extends TestCase
      */
     public function shouldFlushLocations()
     {
-        $cacheMock = Mockery::mock('Illuminate\Cache\CacheManager')
+        $cacheMock = Mockery::mock(CacheManager::class)
             ->shouldAllowMockingProtectedMethods();
 
         $geo_ip = $this->makeGeoIP([], $cacheMock);

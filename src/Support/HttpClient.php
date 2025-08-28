@@ -7,57 +7,43 @@ use Illuminate\Support\Arr;
 class HttpClient
 {
     /**
-     * Request configurations.
-     *
-     * @var array
-     **/
-    private $config = [
-        'base_uri' => '',
-        'headers' => [],
-        'query' => [],
-    ];
-
-    /**
      * Last request http status.
      *
      * @var int
      **/
-    protected $http_code = 200;
+    protected int $http_code = 200;
 
     /**
      * Last request error string.
      *
-     * @var string
+     * @var string|null
      **/
-    protected $errors = null;
+    protected ?string $errors = null;
 
     /**
      * Array containing headers from last performed request.
      *
      * @var array
      */
-    private $headers = [];
+    private array $headers = [];
 
     /**
      * HttpClient constructor.
      *
-     * @param array $config
+     * @param array $config Request configurations.
      */
-    public function __construct(array $config = [])
-    {
-        $this->config = $config;
-    }
+    public function __construct(private readonly array $config = []) {}
 
     /**
      * Perform a get request.
      *
-     * @param  string $url
+     * @param string $url
      * @param  array  $query
      * @param  array  $headers
      *
      * @return array
      */
-    public function get($url, array $query = [], array $headers = [])
+    public function get(string $url, array $query = [], array $headers = []): array
     {
         return $this->execute('GET', $this->buildGetUrl($url, $query), [], $headers);
     }
@@ -65,14 +51,14 @@ class HttpClient
     /**
      * Execute the curl request
      *
-     * @param  string $method
-     * @param  string $url
+     * @param string $method
+     * @param string $url
      * @param  array  $query
      * @param  array  $headers
      *
      * @return array
      */
-    public function execute($method, $url, array $query = [], array $headers = [])
+    public function execute(string $method, string $url, array $query = [], array $headers = []): array
     {
         // Merge global and request headers
         $headers = array_merge(
@@ -105,25 +91,15 @@ class HttpClient
         ]);
 
         // Setup method specific options
-        switch ($method) {
-            case 'PUT':
-            case 'PATCH':
-            case 'POST':
-                curl_setopt_array($curl, [
-                    CURLOPT_CUSTOMREQUEST => $method,
-                    CURLOPT_POST => true,
-                    CURLOPT_POSTFIELDS => $query,
-                ]);
-                break;
-
-            case 'DELETE':
-                curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'DELETE');
-                break;
-
-            default:
-                curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'GET');
-                break;
-        }
+        match ($method) {
+            'PUT', 'PATCH', 'POST' => curl_setopt_array($curl, [
+                CURLOPT_CUSTOMREQUEST => $method,
+                CURLOPT_POST => true,
+                CURLOPT_POSTFIELDS => $query,
+            ]),
+            'DELETE' => curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'DELETE'),
+            default => curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'GET'),
+        };
 
         // Make request
         curl_setopt($curl, CURLOPT_HEADER, true);
@@ -152,19 +128,9 @@ class HttpClient
      *
      * @return bool
      */
-    public function hasErrors()
+    public function hasErrors(): bool
     {
         return is_null($this->errors) === false;
-    }
-
-    /**
-     * Get curl errors
-     *
-     * @return string
-     */
-    public function getErrors()
-    {
-        return $this->errors;
     }
 
     /**
@@ -172,7 +138,7 @@ class HttpClient
      *
      * @return int
      */
-    public function getHttpCode()
+    public function getHttpCode(): int
     {
         return $this->http_code;
     }
@@ -184,7 +150,7 @@ class HttpClient
      *
      * @return array
      */
-    private function parseHeaders($headers)
+    private function parseHeaders(string $headers): array
     {
         $result = [];
 
@@ -205,11 +171,11 @@ class HttpClient
     /**
      * Get request URL.
      *
-     * @param  string $url
+     * @param string $url
      *
      * @return string
      */
-    private function getUrl($url)
+    private function getUrl(string $url): string
     {
         // Check for URL scheme
         if (parse_url($url, PHP_URL_SCHEME) === null) {
@@ -222,12 +188,12 @@ class HttpClient
     /**
      * Build a GET request string.
      *
-     * @param  string $url
+     * @param string $url
      * @param  array  $query
      *
      * @return string
      */
-    private function buildGetUrl($url, array $query = [])
+    private function buildGetUrl(string $url, array $query = []): string
     {
         // Merge global and request queries
         $query = array_merge(
